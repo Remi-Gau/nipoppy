@@ -152,10 +152,8 @@ def check_status(df: pd.DataFrame, dpath, col_dname, session_first=True):
 
     def check_dir(dpath):
         dpath = Path(dpath)
-        if dpath.exists():
-            return len(list(dpath.iterdir())) > 0
-        return False
-    
+        return len(list(dpath.iterdir())) > 0 if dpath.exists() else False
+
     dpath = Path(dpath)
     status = pd.Series(np.nan, index=df.index)
     for session in df[COL_SESSION_MANIFEST].drop_duplicates():
@@ -174,7 +172,7 @@ def check_status(df: pd.DataFrame, dpath, col_dname, session_first=True):
 
 if __name__ == '__main__':
     # argparse
-    HELPTEXT = f"""
+    HELPTEXT = """
     Generate/update CSV file that tracks DICOM fetching/organization/conversion.
     """
     parser = argparse.ArgumentParser(description=HELPTEXT)

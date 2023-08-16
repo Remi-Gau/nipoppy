@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 import argparse
 import glob
-from bids import BIDSLayout 
+from bids import BIDSLayout
 import os
 
 
@@ -24,7 +24,7 @@ parser = argparse.ArgumentParser(description=HELPTEXT)
 # data
 parser.add_argument('--bids_dir', help='path to bids_dir with all the subjects')
 parser.add_argument('--modalities', nargs='*', default=["anat"], 
-                    help='modalities to check') 
+                    help='modalities to check')
 parser.add_argument('--file_ext', default='nii.gz', help='file extension to query')
 parser.add_argument('--output_csv', help='path to output csv file')
 
@@ -41,7 +41,7 @@ participants_tsv = f"{bids_dir}/participants.tsv"
 # Check participants tsv and actual participant dirs
 tsv_participants = set(pd.read_csv(participants_tsv,sep="\t")["participant_id"].values)
 bids_dir_paths = glob.glob(f"{bids_dir}/sub*")
-bids_dir_participants = set([os.path.basename(x) for x in bids_dir_paths])
+bids_dir_participants = {os.path.basename(x) for x in bids_dir_paths}
 
 participants_missing_in_tsv = list(bids_dir_participants - tsv_participants)
 participants_missing_in_bids_dir = list(tsv_participants - bids_dir_participants)
@@ -69,7 +69,7 @@ if tsv_participants == bids_dir_participants:
                                         extension=file_ext, 
                                         suffix=file_suffix,                 
                                         return_type='filename')
-                
+
                 f_count.append(len(f))
 
             session_df.loc[ses] = f_count
@@ -83,7 +83,7 @@ if tsv_participants == bids_dir_participants:
     bids_status_df.to_csv(output_csv)
 
 else:
-    print(f"participants_tsv and bids_dir participants mismatch...")
+    print("participants_tsv and bids_dir participants mismatch...")
     output_csv = os.path.join(os.path.dirname(output_csv) + "/mismatched_participants.csv")
     missing_tsv_status = len(participants_missing_in_tsv) * ["participants_missing_in_tsv"]
     missing_bids_status = len(participants_missing_in_bids_dir) * ["participants_missing_in_bids_dir"]

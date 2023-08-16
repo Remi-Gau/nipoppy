@@ -75,7 +75,7 @@ if __name__ == '__main__':
     visit_id = args.visit_id
     group = args.group
     output_dir = args.output_dir
-    
+
     meas = args.meas
     fwhm = args.fwhm
     template = args.template
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     SINGULARITY_FMRIPREP = f"{CONTAINER_STORE}{FMRIPREP_CONTAINER}"
 
     # Paths
-    FS_dir = f"{dataset_root}/derivatives/freesurfer/v{FS_VERSION}/output/{session}/" 
+    FS_dir = f"{dataset_root}/derivatives/freesurfer/v{FS_VERSION}/output/{session}/"
     FS_license = f"{FS_dir}/license.txt"
 
     if output_dir is None:
@@ -107,7 +107,7 @@ if __name__ == '__main__':
 
     # grab Dx info
     demographics_csv = f"{dataset_root}/tabular/demographics/demographics.csv"
-        
+
     # Singularity CMD 
     SINGULARITY_CMD=f"singularity exec -B {FS_dir}:/fsdir -B {output_dir}:/output_dir {SINGULARITY_FMRIPREP} "
 
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     print("-"*50)
     print("Starting FS analysis...")
     print("-"*50)
-    
+
     print(f"using session: {session} and visit: {visit}")
     print(f"number of available BIDS participants: {n_bids}")
 
@@ -151,15 +151,14 @@ if __name__ == '__main__':
         out_file = f"/output_dir/surf_concat_{group}_{fwhm}mm.mgh"
 
         run(FS_dir, proc_participants, out_file, meas, fwhm, template)
-        
+
         print("Running mris_preproc separately for left and right hemisphere\n")
-        
+
         print(" -"*30)
         print("")
-        
+
         print("mris_preproc run complete")
-        print("-"*50)
     else:
         print("-"*50)
         print("No partcipants found to process...")
-        print("-"*50)
+    print("-"*50)

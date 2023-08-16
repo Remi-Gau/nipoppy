@@ -63,7 +63,7 @@ TractoFlow_Procs = {
 ## define functions to check if the files exist / stages complete
 ##
 
-def check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='All'):    
+def check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='All'):
     """ docstring here
     """
     ## build subject info
@@ -78,25 +78,20 @@ def check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_
     doLocalTracking = False
 
     ## the valid options for task
-    if not (task in list(stage_dict.keys())):
+    if task not in list(stage_dict.keys()):
         raise ValueError("The requested report is not recognized.")
 
     ## pull the processes to check files for
     procs = stage_dict[task]
 
-    ## check if Topup output exists - if it does, drop Eddy, otherwise drop Topup/Eddy_Topup
-    if os.path.exists(subject_dir + '/Topup'):
-        try:
+    try:
+        if os.path.exists(f'{subject_dir}/Topup'):
             procs.remove('Eddy')
-        except ValueError:
-            pass
-    else:
-        try:
+        else:
             procs.remove('Topup')
             procs.remove('Eddy_Topup')
-        except ValueError:
-            pass
-
+    except ValueError:
+        pass
     # ## drop local tracking
     # if (task=='Tracking'):
     #     if not doLocalTracking:
@@ -112,89 +107,152 @@ def check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_
                 files.append(os.path.join(subject_dir, proc, participant_id + stem))
             else:
                 files.append(os.path.join(subject_dir, proc, stem))
-                
+
     ## build logical if files exist
     filesExist = [ os.path.exists(out) for out in files ]
-    
+
     ## fill in possible status files
     if any(filesExist):
-        if all(filesExist):
-            status_msg = SUCCESS
-        else:
-            status_msg = INCOMPLETE
+        status_msg = SUCCESS if all(filesExist) else INCOMPLETE
     elif not os.path.exists(subject_dir):
         status_msg = UNAVAILABLE
     else:
         status_msg = FAIL
-    
+
     ## return status
     return status_msg
 
 def check_dwiPreproc(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages):
     """ docstring here
     """
-    status_msg = check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='DWIPreproc')
-    return status_msg
+    return check_tf_output(
+        subject_dir,
+        session_id,
+        run_id,
+        file_check_dict=TractoFlow_Procs,
+        stage_dict=TractoFlow_Stages,
+        task='DWIPreproc',
+    )
 
 def check_anatPreproc(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages):
     """ docstring here
     """
-    status_msg = check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='AnatPreproc')
-    return status_msg
+    return check_tf_output(
+        subject_dir,
+        session_id,
+        run_id,
+        file_check_dict=TractoFlow_Procs,
+        stage_dict=TractoFlow_Stages,
+        task='AnatPreproc',
+    )
 
 def check_dwiModel(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages):
     """ docstring here
     """
-    status_msg = check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='DWIModel')
-    return status_msg
+    return check_tf_output(
+        subject_dir,
+        session_id,
+        run_id,
+        file_check_dict=TractoFlow_Procs,
+        stage_dict=TractoFlow_Stages,
+        task='DWIModel',
+    )
 
 def check_pftTracking(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages):
     """ docstring here
     """
-    status_msg = check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='Tracking')
-    return status_msg
+    return check_tf_output(
+        subject_dir,
+        session_id,
+        run_id,
+        file_check_dict=TractoFlow_Procs,
+        stage_dict=TractoFlow_Stages,
+        task='Tracking',
+    )
 
 def check_dwiPreprocEddyTopup(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages):
     """ docstring here
     """
-    status_msg = check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='DWIPreprocEddyTopup')
-    return status_msg
+    return check_tf_output(
+        subject_dir,
+        session_id,
+        run_id,
+        file_check_dict=TractoFlow_Procs,
+        stage_dict=TractoFlow_Stages,
+        task='DWIPreprocEddyTopup',
+    )
 
 def check_dwiNormalize(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages):
     """ docstring here
     """
-    status_msg = check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='DWIPreprocResampled')
-    return status_msg
+    return check_tf_output(
+        subject_dir,
+        session_id,
+        run_id,
+        file_check_dict=TractoFlow_Procs,
+        stage_dict=TractoFlow_Stages,
+        task='DWIPreprocResampled',
+    )
 
 def check_anatReorient(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages):
     """ docstring here
     """
-    status_msg = check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='AnatResample')
-    return status_msg
+    return check_tf_output(
+        subject_dir,
+        session_id,
+        run_id,
+        file_check_dict=TractoFlow_Procs,
+        stage_dict=TractoFlow_Stages,
+        task='AnatResample',
+    )
 
 def check_anatTracking(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages):
     """ docstring here
     """
-    status_msg = check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='AnatSegment')
-    return status_msg
+    return check_tf_output(
+        subject_dir,
+        session_id,
+        run_id,
+        file_check_dict=TractoFlow_Procs,
+        stage_dict=TractoFlow_Stages,
+        task='AnatSegment',
+    )
 
 def check_dwiModelTensor(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages):
     """ docstring here
     """
-    status_msg = check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='DWITensor')
-    return status_msg
+    return check_tf_output(
+        subject_dir,
+        session_id,
+        run_id,
+        file_check_dict=TractoFlow_Procs,
+        stage_dict=TractoFlow_Stages,
+        task='DWITensor',
+    )
 
 def check_dwiModelFODF(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages):
     """ docstring here
     """
-    status_msg = check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='DWIFODF')
-    return status_msg
+    return check_tf_output(
+        subject_dir,
+        session_id,
+        run_id,
+        file_check_dict=TractoFlow_Procs,
+        stage_dict=TractoFlow_Stages,
+        task='DWIFODF',
+    )
 
 def check_tf_final(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages):
     """ docstring here
     """
-    status_msg = check_tf_output(subject_dir, session_id, run_id, file_check_dict=TractoFlow_Procs, stage_dict=TractoFlow_Stages, task='All')
-    return status_msg
+    return check_tf_output(
+        subject_dir,
+        session_id,
+        run_id,
+        file_check_dict=TractoFlow_Procs,
+        stage_dict=TractoFlow_Stages,
+        task='All',
+    )
 
 ## the dictionary to return with the inspected outputs
 

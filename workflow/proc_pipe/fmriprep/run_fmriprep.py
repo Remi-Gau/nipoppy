@@ -55,19 +55,19 @@ def run_fmriprep(participant_id, bids_dir, fmriprep_dir, fs_dir, templateflow_di
 
     # Append optional args
     if use_bids_filter:
-        logger.info(f"Using bids_filter.json")
+        logger.info("Using bids_filter.json")
         bids_filter_str = "--bids-filter-file /data_dir/bids_filter.json"
         fmriprep_CMD = f"{fmriprep_CMD} {bids_filter_str}"
 
     if anat_only:
-        logger.info(f"Using anat_only workflow")
+        logger.info("Using anat_only workflow")
         anat_only_str = "--anat-only"
         fmriprep_CMD = f"{fmriprep_CMD} {anat_only_str}"
 
-    CMD_ARGS = SINGULARITY_CMD + fmriprep_CMD 
+    CMD_ARGS = SINGULARITY_CMD + fmriprep_CMD
     CMD = CMD_ARGS.split()
 
-    logger.info(f"Running fmriprep...")
+    logger.info("Running fmriprep...")
     logger.info("-"*50)
     logger.info(f"CMD:\n{CMD}")
     logger.info("-"*50)
@@ -75,7 +75,7 @@ def run_fmriprep(participant_id, bids_dir, fmriprep_dir, fs_dir, templateflow_di
         fmriprep_proc = subprocess.run(CMD)
     except Exception as e:
         logger.error(f"fmriprep run failed with exceptions: {e}")
-    
+
     logger.info(f"Successfully completed fmriprep run for participant: {participant_id}")
     logger.info("-"*75)
     logger.info("")

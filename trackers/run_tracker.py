@@ -27,7 +27,7 @@ def run(global_config_file, dash_schema_file, pipelines, run_id=1):
     proc_status_dfs = [] # list of dataframes
     for pipeline in pipelines:
         pipe_tracker = tracker(global_config_file, dash_schema_file, pipeline) 
-            
+
         dataset_root, session_ids, version = pipe_tracker.get_global_configs()
         schema = pipe_tracker.get_dash_schema()
         tracker_configs = pipeline_tracker_config_dict[pipeline]
@@ -45,14 +45,14 @@ def run(global_config_file, dash_schema_file, pipelines, run_id=1):
         status_check_dict = pipe_tracker.get_pipe_tasks(tracker_configs, PIPELINE_STATUS_COLUMNS)
 
         dash_col_list = list(schema["GLOBAL_COLUMNS"].keys()) 
-        
+
         for session_id in session_ids:
-            print(f"Checking session: {session_id}")    
-            _df = pd.DataFrame(index=participants, columns=dash_col_list)          
+            print(f"Checking session: {session_id}")
+            _df = pd.DataFrame(index=participants, columns=dash_col_list)
             _df["session"] = session_id
-            _df["pipeline_name"] = pipeline        
+            _df["pipeline_name"] = pipeline
             _df["pipeline_version"] = version
-            
+
             for bids_id in participants:
                 participant_id = manifest_df[manifest_df["bids_id"]==bids_id]["participant_id"].values[0]
                 _df.loc[bids_id,"participant_id"] = participant_id
@@ -64,11 +64,8 @@ def run(global_config_file, dash_schema_file, pipelines, run_id=1):
                     subject_dir = f"{dataset_root}/derivatives/{pipeline}/v{version}/output/{bids_id}" 
                 else:
                     print(f"unknown pipeline: {pipeline}")
-                    
-                dir_status = Path(subject_dir).is_dir()
-                # print(f"subject_dir:{subject_dir}, dir_status: {dir_status}")
-                
-                if dir_status:                
+
+                if dir_status := Path(subject_dir).is_dir():
                     for name, func in status_check_dict.items():
                         status = func(subject_dir, session_id, run_id)
                         # print(f"task_name: {name}, status: {status}")

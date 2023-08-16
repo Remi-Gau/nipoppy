@@ -51,5 +51,5 @@ for wf in workflows:
     logger.info(f"Finishing workflow: {wf}")
     logger.info("-"*50)
 
-logger.info(f"Finishing nipoppy run...")
+logger.info("Finishing nipoppy run...")
 logger.info("-"*75)

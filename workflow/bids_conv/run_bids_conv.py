@@ -131,13 +131,13 @@ def run(global_configs, session_id, stage=2, overlays=None, n_jobs=2, dicom_id=N
         # filter by DICOM ID if needed
         logger.info(f'Only running for participant: {dicom_id}')
         heudiconv_df = df_status.loc[df_status[COL_DICOM_ID] == dicom_id]
-    
+
     heudiconv_participants = set(heudiconv_df["dicom_id"].values)
     n_heudiconv_participants = len(heudiconv_participants)
 
     if n_heudiconv_participants > 0:
         logger.info(f"\nStarting bids conversion for {n_heudiconv_participants} participant(s)")
-    
+
         if stage == 2:
             logger.info(f"Copying ./heuristic.py to {DATASET_ROOT}/proc/heuristic.py (to be seen by Singularity container)")
             shutil.copyfile(f"{CWD}/heuristic.py", f"{DATASET_ROOT}/proc/heuristic.py")
@@ -154,12 +154,9 @@ def run(global_configs, session_id, stage=2, overlays=None, n_jobs=2, dicom_id=N
                 ) for dicom_id in heudiconv_participants)
 
         else:
-            # Useful for debugging
-            heudiconv_results = []
             for dicom_id in heudiconv_participants:
-                res = run_heudiconv(dicom_id, global_configs, session_id, stage, overlays, logger) 
-            heudiconv_results.append(res)
-
+                res = run_heudiconv(dicom_id, global_configs, session_id, stage, overlays, logger)
+            heudiconv_results = [res]
         # Check successful heudiconv runs
         n_heudiconv_success = np.sum(heudiconv_results)
         logger.info(f"Successfully ran Heudiconv (Stage 1 or Stage 2) for {n_heudiconv_success} out of {n_heudiconv_participants} participants")
@@ -172,7 +169,7 @@ def run(global_configs, session_id, stage=2, overlays=None, n_jobs=2, dicom_id=N
         }
 
         new_participants_with_bids = heudiconv_participants & participants_with_bids
-        
+
         logger.info("-"*50)
 
         if stage == 1:
@@ -183,14 +180,14 @@ def run(global_configs, session_id, stage=2, overlays=None, n_jobs=2, dicom_id=N
 
             logger.info(f"Current successfully converted BIDS participants for session {session}: {len(participants_with_bids)}")
             logger.info(f"BIDS conversion completed for the {len(new_participants_with_bids)} out of {len(heudiconv_participants)} new participants")
-            
+
             if len(new_participants_with_bids) > 0:
                 heudiconv_df.loc[heudiconv_df[COL_DICOM_ID].isin(new_participants_with_bids), COL_CONV_STATUS] = True
                 df_status.loc[heudiconv_df.index] = heudiconv_df
                 save_backup(df_status, fpath_status, DNAME_BACKUPS_STATUS)
 
     else:
-        logger.info(f"No new participants found for bids conversion...")
+        logger.info("No new participants found for bids conversion...")
 
     logger.info("-"*50)
     logger.info("")

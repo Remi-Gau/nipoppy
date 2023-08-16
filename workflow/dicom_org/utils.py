@@ -25,14 +25,15 @@ def search_dicoms(raw_dicom_dir, skip_dcm_check=False):
     for root, _, files in os.walk(raw_dicom_dir):
         for file in files:
             filepath = os.path.join(root,file)
-            if skip_dcm_check:
+            if (
+                not skip_dcm_check
+                and check_valid_dicom(filepath)
+                or skip_dcm_check
+            ):
                 filelist.append(filepath)
             else:
-                if check_valid_dicom(filepath):
-                    filelist.append(filepath)
-                else:
-                    invalid_dicom_list.append(filepath)      
-    
+                invalid_dicom_list.append(filepath)      
+
     n_dcms = len(filelist)
     unique_dcm = set(filelist)
     n_unique_dcm = len(unique_dcm)
@@ -57,7 +58,7 @@ def copy_dicoms(filelist, dicom_dir, symlink=False):
             else:
                 shutil.copyfile(f, fpath_dest)
     else:
-        logger.debug(f"participant dicoms already exist")
+        logger.debug("participant dicoms already exist")
 
 def check_valid_dicom(f_dcm):
     """ checks if the file is valid dicom
@@ -66,10 +67,7 @@ def check_valid_dicom(f_dcm):
     try:
         dcm_info = pydicom.dcmread(f_dcm)
         img_type = dcm_info[("0008", "0008")].value[0]
-        if img_type == "DERIVED":
-            status = False #Heudiconv cannot convert derived images
-        else:
-            status = True
+        status = img_type != "DERIVED"
     except:
         logger.debug(f"Error reading {f_dcm}")        
 

@@ -14,13 +14,12 @@ ALL_PARCELS = ["aparc","aparc.a2009s","aparc.DKTatlas"]
 SURF_MEASURES = ["curv","area","thickness","volume","sulc","midthickness"]
 
 def check_fsdirs(subject_dir):
-    filepath_status = True
     for fsdir in FIRST_LEVEL_DIRS:
         dirpath = Path(f"{subject_dir}/{fsdir}")
         dirpath_status = Path.is_dir(dirpath)
         if not dirpath_status:
             break
-    return filepath_status
+    return True
 
 def check_mri(subject_dir):
     filepath_status = True
@@ -34,42 +33,39 @@ def check_mri(subject_dir):
 def check_label(subject_dir):
     filepath_status = True
     for parc in DEFAULT_PARCELS:
-        if filepath_status:
-            for hemi in HEMISPHERES:
-                filepath = Path(f"{subject_dir}/label/{hemi}.{parc}.annot")
-                filepath_status = Path.is_file(filepath)
-                if not filepath_status:
-                    break
-        else:
+        if not filepath_status:
             break
+        for hemi in HEMISPHERES:
+            filepath = Path(f"{subject_dir}/label/{hemi}.{parc}.annot")
+            filepath_status = Path.is_file(filepath)
+            if not filepath_status:
+                break
     return filepath_status
 
 def check_surf(subject_dir):
     filepath_status = True
     for measure in SURF_MEASURES:
-        if filepath_status:
-            for hemi in HEMISPHERES:
-                filepath = Path(f"{subject_dir}/surf/{hemi}.{measure}")
-                filepath_status = Path.is_file(filepath)
-                if not filepath_status:
-                    break
-        else:
+        if not filepath_status:
             break
-            
+
+        for hemi in HEMISPHERES:
+            filepath = Path(f"{subject_dir}/surf/{hemi}.{measure}")
+            filepath_status = Path.is_file(filepath)
+            if not filepath_status:
+                break
     return filepath_status
 
 def check_stats(subject_dir, PARCELS=DEFAULT_PARCELS):
     filepath_status = True
     for parc in PARCELS:
-        if filepath_status:
-            for hemi in HEMISPHERES:
-                filepath = Path(f"{subject_dir}/stats/{hemi}.{parc}.stats")
-                filepath_status = Path.is_file(filepath)
-                if not filepath_status:
-                    break
-        else:
+        if not filepath_status:
             break
 
+        for hemi in HEMISPHERES:
+            filepath = Path(f"{subject_dir}/stats/{hemi}.{parc}.stats")
+            filepath_status = Path.is_file(filepath)
+            if not filepath_status:
+                break
     # check aseg
     filepath = Path(f"{subject_dir}/stats/aseg.stats")
     aseg_status = Path.is_file(filepath)
@@ -78,23 +74,12 @@ def check_stats(subject_dir, PARCELS=DEFAULT_PARCELS):
 
 def check_run_status(subject_dir, session_id=None, run_id=None):
     check_list = [check_fsdirs,check_mri,check_label,check_surf,check_stats]
-    status_list = []
-    for cl in check_list:
-        status_list.append(cl(subject_dir))
-    
-    if all(status_list):
-        status_msg = SUCCESS
-    else:
-        status_msg = FAIL
-    return status_msg
+    status_list = [cl(subject_dir) for cl in check_list]
+    return SUCCESS if all(status_list) else FAIL
 
 def check_parcels(subject_dir, session_id=None, run_id=None):
     stats_status = check_stats(subject_dir,ALL_PARCELS)
-    if stats_status:
-        status_msg = SUCCESS
-    else:
-        status_msg = FAIL
-    return status_msg
+    return SUCCESS if stats_status else FAIL
 
 
 tracker_configs = {

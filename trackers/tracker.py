@@ -48,6 +48,4 @@ class tracker:
 def get_start_time(subject_dir):
     # file modification timestamp of a file
     m_time = os.path.getmtime(subject_dir)
-    # convert timestamp into DateTime object
-    dt_m = datetime.datetime.fromtimestamp(m_time)
-    return dt_m
+    return datetime.datetime.fromtimestamp(m_time)

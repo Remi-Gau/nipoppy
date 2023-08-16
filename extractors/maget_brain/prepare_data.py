@@ -60,7 +60,7 @@ manifest_df = pd.read_csv(manifest_csv)
 bids_id_list = manifest_df["bids_id"].unique()
 
 for bids_id in bids_id_list:
-    if run_id == None:
+    if run_id is None:
         img_file_name = f"{bids_id}_ses-{session_id}_desc-preproc_T1w.nii.gz"
         mask_file_name = f"{bids_id}_ses-{session_id}_desc-brain_mask.nii.gz"
         masked_img_file_name = f"{bids_id}_ses-{session_id}_desc-masked_preproc_T1w.nii.gz"
@@ -73,7 +73,7 @@ for bids_id in bids_id_list:
     img_path = f"{fmriprep_dir}/{bids_id}/ses-{session_id}/anat/{img_file_name}"
     mask_path = f"{fmriprep_dir}/{bids_id}/ses-{session_id}/anat/{mask_file_name}"
     masked_img_path = f"{maget_preproc_T1w_nii_dir}/{masked_img_file_name}"
-    
+
     try:
         get_masked_image(img_path, mask_path, masked_img_path)
     except Exception as e:

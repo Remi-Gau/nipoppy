@@ -23,7 +23,7 @@ def infotodict(seqinfo):
 
     #---------anat-----------#
     T1w = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_run-{item:01d}_T1w')
-    
+
     # Suffix PDT2 or MESET2 failed BIDS validation
     # Recommendation is to use MESE: https://github.com/bids-standard/bids-specification/issues/223
     # If your image proc pipeline expects T2w suffix, run the "fix_heudiconv_naming.sh" to rename these files" 
@@ -31,21 +31,21 @@ def infotodict(seqinfo):
 
     T2starMag = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_run-{item:01d}_part-mag_T2starw')
     T2starPhase = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_run-{item:01d}_part-phase_T2starw')
-    
+
     T1wNeuromel = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_acq-NM_run-{item:01d}_T1w')
-    
+
     # This needs to have specific order: https://neurostars.org/t/multi-echo-anatomical-mri-bids-questions/17157/16
     MEGREMag = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_run-{item:01d}_part-mag_MEGRE')
     MEGREPhase = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_run-{item:01d}_part-phase_MEGRE')
-    
+
     FLAIR = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_run-{item:01d}_FLAIR')
-   
+
 
     #---------dwi-----------#
     dwi = create_key('sub-{subject}/{session}/dwi/sub-{subject}_{session}_run-{item:01d}_dwi')
     dwiAP = create_key('sub-{subject}/{session}/dwi/sub-{subject}_{session}_dir-AP_run-{item:01d}_dwi')
     dwiPA = create_key('sub-{subject}/{session}/dwi/sub-{subject}_{session}_dir-PA_run-{item:01d}_dwi')
-    
+
     #---------func-----------#
     bold = create_key('sub-{subject}/{session}/func/sub-{subject}_{session}_task-rest_run-{item:01d}_bold')
 
@@ -60,7 +60,7 @@ def infotodict(seqinfo):
     info = {T1w: [], PDT2: [], T2starMag: [], T2starPhase: [], MEGREMag: [], MEGREPhase: [], T1wNeuromel: [], FLAIR: [], dwi: [], 
             dwiAP: [], dwiPA: [], bold: [], boldGREfmapMag: [], boldGREfmapPhase:[], epiAP: [], epiPA: []
            }
-    
+
     ##########################################################################################################
     ## This is typically what you will have to change based on your scanner protocols
     ## Use heudiconv run_1 output file:dicominfo.tsv from all subjects to identify all possible protocol names
@@ -79,7 +79,7 @@ def infotodict(seqinfo):
         epiAP:['RS_fMRI_se_AP'],
         epiPA:['RS_fMRI_se_PA']
     }
-    
+
     # These protocols needs special naming based on image type (see below)
     protocols_with_mag_and_phase = {
                                     "boldGREfmap": [boldGREfmapMag, boldGREfmapPhase]
@@ -89,17 +89,17 @@ def infotodict(seqinfo):
 
     data = create_key('run{item:03d}')
     last_run = len(seqinfo)
-    for idx, s in enumerate(seqinfo):
+    for s in seqinfo:
         print(s)
-        for key,protocols in keys_protocols_dict.items():
+        for key, protocols in keys_protocols_dict.items():
             for ptcl in protocols:
                 if (ptcl in s.protocol_name):
-                    if key in protocols_with_mag_and_phase.keys():
-                        if 'M' in s.image_type:
-                            new_key = protocols_with_mag_and_phase[key][0] # first entry is mag
-                        else:
-                            new_key = protocols_with_mag_and_phase[key][1] # second entry is phase
-
+                    if key in protocols_with_mag_and_phase:
+                        new_key = (
+                            protocols_with_mag_and_phase[key][0]
+                            if 'M' in s.image_type
+                            else protocols_with_mag_and_phase[key][1]
+                        )
                         info[new_key].append(s.series_id)
 
                     else:

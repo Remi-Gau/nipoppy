@@ -41,53 +41,54 @@ def check_output(subject_dir, file_check_dict, session_id, run_id, modality,
     participant_id = os.path.basename(subject_dir)
     status_msg = SUCCESS
     for k,v in file_check_dict.items():
-        if status_msg == SUCCESS:    
-            default_tpl_status = []
-            for tpl_space in tpl_spaces:
-                for tpl_res in tpl_resolutions:
-                    file_suffix = f"space-{tpl_space}_{tpl_res}_{v}"
-                    if modality == "anat":
-                        if run_id == None:
-                            filepath = Path(f"{subject_dir}/{session}/{modality}/{participant_id}_{session}_{file_suffix}")
-                        else:
-                            filepath = Path(f"{subject_dir}/{session}/{modality}/{participant_id}_{session}_{run}_{file_suffix}")
-
-                    elif modality == "func":
-                        if run_id == None:
-                            filepath = Path(f"{subject_dir}/{session}/{modality}/{participant_id}_{session}_{task}_{file_suffix}")
-                        else:
-                            filepath = Path(f"{subject_dir}/{session}/{modality}/{participant_id}_{session}_{task}_{run}_{file_suffix}")
-
-                    else:
-                        print(f"Unknown modality: {modality}")
-
-                    filepath_status = Path.is_file(filepath)
-
-                    default_tpl_status.append(filepath_status)
-
-            if not any(default_tpl_status):
-                status_msg = FAIL                    
-                break
-        else:
+        if status_msg != SUCCESS:
             break
 
+        default_tpl_status = []
+        for tpl_space in tpl_spaces:
+            for tpl_res in tpl_resolutions:
+                file_suffix = f"space-{tpl_space}_{tpl_res}_{v}"
+                if modality == "anat":
+                    filepath = (
+                        Path(
+                            f"{subject_dir}/{session}/{modality}/{participant_id}_{session}_{file_suffix}"
+                        )
+                        if run_id is None
+                        else Path(
+                            f"{subject_dir}/{session}/{modality}/{participant_id}_{session}_{run}_{file_suffix}"
+                        )
+                    )
+                elif modality == "func":
+                    if run_id is None:
+                        filepath = Path(f"{subject_dir}/{session}/{modality}/{participant_id}_{session}_{task}_{file_suffix}")
+                    else:
+                        filepath = Path(f"{subject_dir}/{session}/{modality}/{participant_id}_{session}_{task}_{run}_{file_suffix}")
+
+                else:
+                    print(f"Unknown modality: {modality}")
+
+                filepath_status = Path.is_file(filepath)
+
+                default_tpl_status.append(filepath_status)
+
+        if not any(default_tpl_status):
+            status_msg = FAIL                    
+            break
     return status_msg
 
 def check_anat_output(subject_dir, session_id, run_id):
     """ Check output paths for anat stream
     """
     modality = "anat"
-    status_msg = check_output(subject_dir, anat_files_dict, session_id, run_id, modality)
-
-    return status_msg
+    return check_output(subject_dir, anat_files_dict, session_id, run_id, modality)
 
 def check_func_output(subject_dir, session_id, run_id, task="task-rest"):
     """ Check output paths for func stream
     """
     modality = "func"
-    status_msg = check_output(subject_dir, func_files_dict, session_id, run_id, modality, task=task)
-
-    return status_msg
+    return check_output(
+        subject_dir, func_files_dict, session_id, run_id, modality, task=task
+    )
 
 # TODO
 def check_MNI152NLin2009cSym(subject_dir, session_id, run_id):
@@ -97,9 +98,15 @@ def check_MNI152NLin2009cSym(subject_dir, session_id, run_id):
     custom_tpl_resolutions = ["res-1"]
     modality = "anat"
     file_dict = anat_files_dict
-    status_msg = check_output(subject_dir, file_dict, session_id, run_id, modality,
-                                tpl_spaces=custom_tpl_spaces, tpl_resolutions=custom_tpl_resolutions)
-    return status_msg
+    return check_output(
+        subject_dir,
+        file_dict,
+        session_id,
+        run_id,
+        modality,
+        tpl_spaces=custom_tpl_spaces,
+        tpl_resolutions=custom_tpl_resolutions,
+    )
     
 def check_MNI152NLin2009cAsym(subject_dir, session_id, run_id):
     """ Checks availability of MNI152NLin2009cAsym space images
@@ -108,9 +115,15 @@ def check_MNI152NLin2009cAsym(subject_dir, session_id, run_id):
     custom_tpl_resolutions = ["res-1"]
     modality = "anat"
     file_dict = anat_files_dict
-    status_msg = check_output(subject_dir, file_dict, session_id, run_id, modality,
-                                tpl_spaces=custom_tpl_spaces, tpl_resolutions=custom_tpl_resolutions)
-    return status_msg
+    return check_output(
+        subject_dir,
+        file_dict,
+        session_id,
+        run_id,
+        modality,
+        tpl_spaces=custom_tpl_spaces,
+        tpl_resolutions=custom_tpl_resolutions,
+    )
 
 def check_MNI152NLin6Sym(subject_dir, session_id, run_id):
     """ Checks availability of MNI152NLin6Sym space images
@@ -119,9 +132,15 @@ def check_MNI152NLin6Sym(subject_dir, session_id, run_id):
     custom_tpl_resolutions = ["res-1"]
     modality = "anat"
     file_dict = anat_files_dict
-    status_msg = check_output(subject_dir, file_dict, session_id, run_id, modality,
-                                tpl_spaces=custom_tpl_spaces, tpl_resolutions=custom_tpl_resolutions)
-    return status_msg
+    return check_output(
+        subject_dir,
+        file_dict,
+        session_id,
+        run_id,
+        modality,
+        tpl_spaces=custom_tpl_spaces,
+        tpl_resolutions=custom_tpl_resolutions,
+    )
 
 def check_MNI152Lin(subject_dir, session_id, run_id):
     """ Checks availability of MNI152Lin space images
@@ -130,9 +149,15 @@ def check_MNI152Lin(subject_dir, session_id, run_id):
     custom_tpl_resolutions = ["res-1"]
     modality = "anat"
     file_dict = anat_files_dict
-    status_msg = check_output(subject_dir, file_dict, session_id, run_id, modality,
-                                tpl_spaces=custom_tpl_spaces, tpl_resolutions=custom_tpl_resolutions)
-    return status_msg   
+    return check_output(
+        subject_dir,
+        file_dict,
+        session_id,
+        run_id,
+        modality,
+        tpl_spaces=custom_tpl_spaces,
+        tpl_resolutions=custom_tpl_resolutions,
+    )   
 
 tracker_configs = {
     "pipeline_complete": check_anat_output,

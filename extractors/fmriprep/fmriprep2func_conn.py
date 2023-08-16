@@ -29,7 +29,7 @@ test_output = False
 ### Load Atlas
 
 ## schaefer
-if brain_atlas=='schaefer':
+if brain_atlas == 'schaefer':
       parc = datasets.fetch_atlas_schaefer_2018(n_rois=100)
       atlas_filename = parc.maps
       labels = parc.labels
@@ -39,37 +39,36 @@ if brain_atlas=='schaefer':
       labels = np.insert(labels, 0, 'Background')
       # create the masker for extracting time series
       masker = NiftiLabelsMasker(labels_img=atlas_filename, standardize=True)
-## seitzman
-if brain_atlas=='seitzman':
+elif brain_atlas == 'seitzman':
       parc = datasets.fetch_coords_seitzman_2018()
+      labels = parc['regions']
       atlas_filename = parc['rois']
       radius = parc['radius']
-      labels = parc['regions']
       # create the masker for extracting time series
       masker = NiftiSpheresMasker(seeds=atlas_filename, radius=radius, standardize=True)
 
 ### Load Subjects
 ALL_SUBJECTS = os.listdir(root)
-ALL_SUBJECTS = [i for i in ALL_SUBJECTS if ('sub' in i) and (not '.html' in i)]
+ALL_SUBJECTS = [i for i in ALL_SUBJECTS if 'sub' in i and '.html' not in i]
 ALL_SUBJECTS.sort()
-print('*** '+ str(len(ALL_SUBJECTS)) + ' subjects were found.')
+print(f'*** {len(ALL_SUBJECTS)} subjects were found.')
 for subj in ALL_SUBJECTS:
-      print('*** running '+subj)
+      print(f'*** running {subj}')
       ### output dictionary
       FC = {}
-      
+
       ### functional data
       bold = root + subj + '/ses-01/func/'+ subj +'_ses-01_task-rest_run-1_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii.gz'
 
       ### Confounds
 
-      if confound_strategy=='no_motion':
+      if confound_strategy == 'no_motion':
             confounds_simple, sample_mask = load_confounds(
                   bold,
                   strategy=["high_pass", "motion", "wm_csf"],
                   motion="basic", wm_csf="basic"
                   )
-      if confound_strategy=='no_motion_no_gsr':
+      elif confound_strategy == 'no_motion_no_gsr':
             confounds_minimal_no_gsr, sample_mask = load_confounds(
                   bold,
                   strategy=["high_pass", "motion", "wm_csf", "global_signal"],
@@ -148,11 +147,11 @@ if test_output:
       ALL_RECORDS = os.listdir(dir)
       ALL_RECORDS = [i for i in ALL_RECORDS if 'FC_output' in i]
       ALL_RECORDS.sort()
-      print(str(len(ALL_RECORDS))+' subjects were found.')
+      print(f'{len(ALL_RECORDS)} subjects were found.')
 
-      FC_all = list()
-      FC_MNI = list()
-      FC_PD = list()
+      FC_all = []
+      FC_MNI = []
+      FC_PD = []
       for subj in ALL_RECORDS:
             FC = np.load(dir+subj,allow_pickle='TRUE').item()
             FC_all.append(FC[metric])
@@ -160,21 +159,39 @@ if test_output:
                   FC_MNI.append(FC[metric])
             if 'PD' in subj:
                   FC_PD.append(FC[metric])
-      print(str(len(FC_MNI))+' MNI subjects were found.')
-      print(str(len(FC_PD))+' PD subjects were found.')
+      print(f'{len(FC_MNI)} MNI subjects were found.')
+      print(f'{len(FC_PD)} PD subjects were found.')
       avg_FC = np.mean(np.array(FC_all), axis=0)
       avg_FC_MNI = np.mean(np.array(FC_MNI), axis=0)
       avg_FC_PD = np.mean(np.array(FC_PD), axis=0)
       np.fill_diagonal(avg_FC, 0)
-      plotting.plot_matrix(avg_FC, labels=FC['roi_labels'],
-                  figure=(9, 7), vmax=1, vmin=-1,
-                  title=metric+' ALL', reorder=False)
+      plotting.plot_matrix(
+          avg_FC,
+          labels=FC['roi_labels'],
+          figure=(9, 7),
+          vmax=1,
+          vmin=-1,
+          title=f'{metric} ALL',
+          reorder=False,
+      )
       np.fill_diagonal(avg_FC_MNI, 0)
-      plotting.plot_matrix(avg_FC_MNI, labels=FC['roi_labels'],
-                  figure=(9, 7), vmax=1, vmin=-1,
-                  title=metric+' MNI', reorder=False)
+      plotting.plot_matrix(
+          avg_FC_MNI,
+          labels=FC['roi_labels'],
+          figure=(9, 7),
+          vmax=1,
+          vmin=-1,
+          title=f'{metric} MNI',
+          reorder=False,
+      )
       np.fill_diagonal(avg_FC_PD, 0)
-      plotting.plot_matrix(avg_FC_PD, labels=FC['roi_labels'],
-                  figure=(9, 7), vmax=1, vmin=-1,
-                  title=metric+' PD', reorder=False)
+      plotting.plot_matrix(
+          avg_FC_PD,
+          labels=FC['roi_labels'],
+          figure=(9, 7),
+          vmax=1,
+          vmin=-1,
+          title=f'{metric} PD',
+          reorder=False,
+      )
       plotting.show()

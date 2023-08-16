@@ -41,8 +41,7 @@ COLS_STATUS = [COL_SUBJECT_MANIFEST, COL_SESSION_MANIFEST,
 def participant_id_to_dicom_id(participant_id):
     # keep only alphanumeric characters
     participant_id = str(participant_id)
-    dicom_id = ''.join(filter(str.isalnum, participant_id))
-    return dicom_id
+    return ''.join(filter(str.isalnum, participant_id))
 
 def dicom_id_to_bids_id(dicom_id):
     return f'{BIDS_SUBJECT_PREFIX}{dicom_id}'

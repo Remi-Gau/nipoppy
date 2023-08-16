@@ -50,11 +50,7 @@ def parse_aseg(aseg_file, stat_measure):
     # Get global volumes from the "measure" lines
     file_data = open(aseg_file, 'r')
     lines = file_data.readlines()
-    measure_lines = []
-    for line in lines:
-        if "Measure" in line:
-            measure_lines.append(line)
-
+    measure_lines = [line for line in lines if "Measure" in line]
     global_df = pd.DataFrame(measure_lines)
     global_df = global_df.replace('\n','', regex=True)
     global_df = global_df[0].str.split(",", expand=True)
@@ -89,8 +85,8 @@ if __name__ == "__main__":
 
     print(f"Found {len(subject_id_list)} subjects\n")
 
-    ### cortical surface measures 
-    print(f"***Parsing ASEG subcortical volumes***")
+    ### cortical surface measures
+    print("***Parsing ASEG subcortical volumes***")
     hemispheres = ["lh", "rh"]
 
     hemi_stat_measures_dict = {}
@@ -100,10 +96,10 @@ if __name__ == "__main__":
             try:
                 fs_stats_dir = f"{fs_output_dir}{subject_id}/stats/"
                 stats = CorticalParcellationStats.read(f"{fs_stats_dir}{hemi}.{stat_file}").structural_measurements
-                
+
                 cols = ["subject_id"] + list(stats["structure_name"].values)
                 vals = [subject_id] + list(stats[stat_measure].values)
-                
+
                 df = pd.DataFrame(columns=cols)
                 df.loc[0] = vals
                 stat_measure_df = pd.concat([stat_measure_df, df], axis=0)
@@ -114,7 +110,7 @@ if __name__ == "__main__":
         field_df = ukbb_dkt_ct_fields_df[ukbb_dkt_ct_fields_df["hemi"]==hemi][["Field ID","roi"]]
         roi_field_id_dict = dict(zip(field_df["roi"], field_df["Field ID"]))
         stat_measure_df = stat_measure_df.rename(columns=roi_field_id_dict)
-        
+
         hemi_stat_measures_dict[hemi] = stat_measure_df
 
     # merge left and right dfs
@@ -134,23 +130,23 @@ if __name__ == "__main__":
 
     # ASEG subcortical volumes
     if aseg:
-        print(f"***Parsing ASEG subcortical volumes***")
+        print("***Parsing ASEG subcortical volumes***")
         stat_file = "aseg.stats"
         stat_measure = "Volume_mm3"
 
         # Grab UKBB field ids lookup table
         ukbb_aseg_vol_fields_df = pd.read_csv(ukbb_aseg_vol_fields)
-        
+
         stat_measure_df = pd.DataFrame()
         for subject_id in subject_id_list:
             try: 
                 fs_stats_dir = f"{fs_output_dir}{subject_id}/stats/"
                 aseg_file = f"{fs_stats_dir}{stat_file}"
                 stats = parse_aseg(aseg_file,stat_measure)
-                
+
                 cols = ["subject_id"] + list(stats["hemi_ROI"].values)
                 vals = [subject_id] + list(stats[stat_measure].values)
-                
+
                 df = pd.DataFrame(columns=cols)
                 df.loc[0] = vals
                 stat_measure_df = pd.concat([stat_measure_df, df], axis=0)
@@ -158,7 +154,7 @@ if __name__ == "__main__":
             except:
                 print(f"Error parsing subcortical volumes for {subject_id}")
 
-        
+
         field_df = ukbb_aseg_vol_fields_df[ukbb_aseg_vol_fields_df["hemi_ROI"].isin(stat_measure_df.columns)]
         common_rois = list(field_df["hemi_ROI"].values)
         roi_field_id_dict = dict(zip(field_df["hemi_ROI"], field_df["Field ID"]))
@@ -169,7 +165,7 @@ if __name__ == "__main__":
         stat_measure_df = stat_measure_df[["subject_id"] + common_rois].copy()
         stat_measure_df = stat_measure_df.rename(columns=roi_field_id_dict)
 
-        save_file = f"aseg_subcortical_volumes.csv"
-        
+        save_file = "aseg_subcortical_volumes.csv"
+
         print(f"Saving subcortical stat measures here: {save_dir}/{save_file}")
         stat_measure_df.to_csv(f"{save_dir}/{save_file}")

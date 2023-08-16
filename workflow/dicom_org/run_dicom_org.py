@@ -67,7 +67,7 @@ def run(global_configs, session_id, logger=None, use_symlinks=True, skip_dcm_che
 
     fpath_status = f"{DATASET_ROOT}/scratch/raw_dicom/doughnut.csv"
     df_status = load_status(fpath_status)
-    
+
     if logger is None:
         log_file = f"{log_dir}/dicom_org.log"
         logger = my_logger.get_logger(log_file)
@@ -111,8 +111,8 @@ def run(global_configs, session_id, logger=None, use_symlinks=True, skip_dcm_che
         save_backup(df_status, fpath_status, DNAME_BACKUPS_STATUS)
 
     else:
-        logger.info(f"No new participants found for dicom reorg...")
-        
+        logger.info("No new participants found for dicom reorg...")
+
     logger.info("-"*50)
 
 if __name__ == '__main__':

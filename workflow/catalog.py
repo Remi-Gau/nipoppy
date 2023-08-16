@@ -33,16 +33,15 @@ def list_dicoms(dcm_dir, logger):
     return participant_dcm_dirs
 
 def list_bids(bids_dir, session_id, logger):
+    current_bids_session_dirs = []
     # available participant bids dirs (for particular session)
     if Path.is_dir(Path(bids_dir)):
         current_bids_dirs = next(os.walk(bids_dir))[1]
-        current_bids_session_dirs = []
         for pbd in current_bids_dirs:
             ses_dir_path = Path(f"{bids_dir}/{pbd}/ses-{session_id}")
             if Path.is_dir(ses_dir_path):
                 current_bids_session_dirs.append(pbd)
     else:
-        current_bids_session_dirs = []
         logger.warning(f"No participant bids dir found in {bids_dir}")
 
     return current_bids_session_dirs
