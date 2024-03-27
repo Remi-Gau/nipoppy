@@ -1,19 +1,19 @@
 {
     "backup":{
-        "description": "",
-        "files": [],
+        "description": "data backup space (tars)",
+        "files": ["README.md"],
         "subdirs": {}
     },
     
     "downloads":{
-        "description": "",
-        "files": [],
+        "description": "data dumps from remote data-stores (e.g. LONI)",
+        "files": ["README.md"],
         "subdirs": {}
     },
     
     "proc":{
-        "description": "",
-        "files": ["global_configs.json"],
+        "description": "space for config and log files of the processing pipelines",
+        "files": ["global_configs.json", "README.md"],
         "subdirs": {}
     },
     
@@ -22,11 +22,13 @@
         "files": ["manifest.csv"],
         "subdirs": {
             "demographics":{
-                "description": "",
+                "description": "contains demographic data (e.g. age, sex)",
+                "files": ["README.md"],
                 "subdirs": {}
             },
             "assessments":{
-                "description": "",
+                "description": "contains clinical assessments (e.g. MoCA) ",
+                "files": ["README.md"],
                 "subdirs": {}
             }
         }
@@ -34,7 +36,7 @@
     },
 
     "scratch": {
-        "description": "",
+        "description": "space for un-organized data and wrangling",
         "files": [],
         "subdirs": {
             "raw_dicom": {
@@ -51,19 +53,19 @@
     },
 
     "dicom":{
-        "description": "",
+        "description": "participant-level dicom dirs",
         "files": [],
         "subdirs": {}
     },
 
     "bids":{
-        "description": "",
+        "description": "BIDS formatted dataset",
         "files": [],
         "subdirs": {}
     },
 
     "derivatives":{
-        "description": "",
+        "description": "output of processing pipelines (e.g. fmriprep, mriqc)",
         "files": [],
         "subdirs": {
             "mriqc": {
@@ -90,7 +92,7 @@
     },
 
     "releases":{
-        "description": "",
+        "description": "data releases (symlinks)",
         "files": [],
         "subdirs": {}
     }
